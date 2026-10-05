@@ -1,0 +1,59 @@
+<app-header-component></app-header-component>
+
+<h1>Registracija</h1>
+<form (ngSubmit)="register()">
+    <div>
+        Korisnicko ime: <input type="text" name="username" [(ngModel)]="username">
+    </div>
+    <div>
+        Lozinka: <input type="password" name="password" [(ngModel)]="password">
+    </div>
+    <div>
+        Ime: <input type="text" name="firstname" [(ngModel)]="firstname">
+    </div>
+    <div>
+        Prezime: <input type="text" name="lastname" [(ngModel)]="lastname">
+    </div>
+    <div>
+        Kontakt telefon: <input type="tel" name="phone_number" [(ngModel)]="phoneNumber">
+    </div>
+    <div>
+        E-mail adresa: <input type="email" name="email" [(ngModel)]="email">
+    </div>
+    <div>
+        Tip korisnika:
+        <select name="registrationType" [(ngModel)]="registrationType" id="">
+            <option value="">
+                Odaberite tip korisnika
+            </option>
+            <option value="individual">
+                Fizicko lice
+            </option>
+            <option value="company">
+                Pravno lice
+            </option>
+            <option value="printer">
+                Stamparija
+            </option>
+        </select>
+    </div>
+
+    @if(registrationType  === 'company' || registrationType === 'printer') {
+        <input type="text" name="institutionName" [(ngModel)]="institutionName" placeholder="Naziv institucije" id="">
+        <input type="text" name="institutionAddress" [(ngModel)]="institutionAddress" placeholder="Adresa institucije" id="">
+        <input type="text" name="institutionCity" [(ngModel)]="institutionCity" placeholder="Grad" id="">
+        <input type="text" name="registrationNumber" [(ngModel)]="registrationNumber" placeholder="Maticni broj" id="">
+        <input type="text" name="taxId" [(ngModel)]="taxId" placeholder="PIB" id="">
+    }
+
+    <div class="file-upload">
+        <span>Profilna slika:</span>
+        <label for="pfpImage" class="file-label">Odaberite fotografiju</label>
+        <input type="file" id="pfpImage" name="pfpImage" accept="image/png, image/jpeg, image/gif" (change)="selectImage($event)">
+    </div>
+    <button type="submit">Registrujte se</button>
+    <div>
+        <span [style.color]="msgColor" >{{message}}</span>
+    </div>
+</form>
+<app-footer-component></app-footer-component>

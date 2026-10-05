@@ -1,0 +1,491 @@
+<app-header-component></app-header-component>
+
+<main class="products-page">
+    <div class="page-header">
+        <div>
+        <span class="section-label">ŠTAMPARIJA</span>
+        <h1>Proizvodi i usluge</h1>
+        <p>Upravljajte proizvodima, lagerom, uslugama štampe i unosom proizvoda iz JSON fajla.</p>
+        </div>
+    </div>
+
+    <section class="accordion-card">
+        <button type="button" class="accordion-header" (click)="toggleProductSection()">
+            <div class="accordion-heading">
+                    <span class="accordion-title">Dodaj proizvod ručno</span>
+                    <span class="accordion-description">Unesite podatke o proizvodu, lageru, bojama, slikama i dodatnim uslugama štampe.</span>
+                </div>
+            <span class="arrow" [class.open]="productSectionOpen">▼</span>
+        </button>
+
+        @if (productSectionOpen) {
+        <div class="accordion-content">
+            <div class="subsection first-subsection">
+                <div class="subsection-heading">
+                    <div>
+                        <span class="step-label">KORAK 1</span>
+                        <h3>Osnovni podaci</h3>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Šifra proizvoda *</label>
+                        <input type="text" [(ngModel)]="code" placeholder="npr. MAJ-001">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Naziv proizvoda *</label>
+                        <input type="text" [(ngModel)]="name" placeholder="npr. Pamučna majica">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Opis</label>
+                        <textarea [(ngModel)]="description" rows="4" placeholder="Opis proizvoda..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kategorija *</label>
+                        <select [(ngModel)]="categoryId" (change)="categoryChanged()">
+                            <option value="">Izaberite kategoriju</option>
+                            @for (category of categories; track category._id) {
+                                <option [value]="category._id">{{ category.name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                    <label>Potkategorija *</label>
+                    <select [(ngModel)]="subcategoryId" [disabled]="!categoryId">
+                        <option value="">Izaberite potkategoriju</option>
+                        @for (subcategory of subcategories; track subcategory._id) {
+                            <option [value]="subcategory._id">{{ subcategory.name }}</option>
+                        }
+                    </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cena po komadu (RSD) *</label>
+                        <input type="number" [(ngModel)]="unitPrice" min="1" step="0.01" placeholder="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Početna količina *</label>
+                        <input type="number" [(ngModel)]="quantity" min="0" step="1" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+            <div class="subsection-heading">
+                <div>
+                    <span class="step-label">KORAK 2</span>
+                    <h3>Dostupne boje</h3>
+                </div>
+            </div>
+
+            <p class="subsection-description">Dodajte sve boje u kojima je proizvod dostupan.</p>
+
+            <div class="inline-form">
+                <input type="text" [(ngModel)]="colorInput" placeholder="npr. Bela">
+                <button type="button" class="secondary-btn" (click)="addColor()">DODAJ BOJU</button>
+            </div>
+
+            @if (colors.length > 0) {
+                <div class="tags">
+                    @for (color of colors; track $index; let i = $index) {
+                        <span class="tag">
+                            {{ color }}
+                            <button type="button" (click)="removeColor(i)">×</button>
+                        </span>
+                    }
+                </div>
+            }
+            </div>
+
+            <div class="subsection">
+            <div class="subsection-heading">
+                <div>
+                    <span class="step-label">KORAK 3</span>
+                    <h3>Dodatne usluge štampe</h3>
+                </div>
+            </div>
+
+            <p class="subsection-description">Za proizvod možete definisati jednu ili više dodatnih usluga štampe.</p>
+
+            <div class="service-form">
+                <div class="form-group">
+                    <label>Tip usluge</label>
+                    <input type="text" [(ngModel)]="serviceType" placeholder="npr. DTF štampa">
+                </div>
+
+                <div class="form-group">
+                    <label>Dodatna cena (RSD)</label>
+                    <input type="number" [(ngModel)]="serviceAdditionalPrice" min="0" step="0.01" placeholder="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Max širina (mm)</label>
+                    <input type="number" [(ngModel)]="serviceMaxWidthMm" min="1" step="1" placeholder="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Max visina (mm)</label>
+                    <input type="number" [(ngModel)]="serviceMaxHeightMm" min="1" step="1" placeholder="0">
+                </div>
+            </div>
+
+            <button type="button" class="secondary-btn add-service-btn" (click)="addPrintService()">DODAJ USLUGU</button>
+
+            @if (printServices.length > 0) {
+                <div class="table-wrapper services-table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Usluga</th>
+                            <th>Dodatna cena</th>
+                            <th>Max širina</th>
+                            <th>Max visina</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (service of printServices; track $index; let i = $index) {
+                            <tr>
+                            <td>{{ service.type }}</td>
+                            <td>{{ service.additionalPrice }} RSD</td>
+                            <td>{{ service.maxWidthMm }} mm</td>
+                            <td>{{ service.maxHeightMm }} mm</td>
+                            <td>
+                                <button type="button" class="remove-btn" (click)="removePrintService(i)">UKLONI</button>
+                            </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            </div>
+
+            <div class="subsection">
+            <div class="subsection-heading">
+                <div>
+                <span class="step-label">KORAK 4</span>
+                <h3>Slike proizvoda</h3>
+                </div>
+            </div>
+
+            <p class="subsection-description">Dodajte jednu glavnu sliku i najviše tri dodatne slike za galeriju proizvoda.</p>
+
+            <div class="image-upload-section">
+                <div class="image-upload-box">
+                    <span class="upload-box-title">Glavna slika</span>
+                    <span class="upload-box-description">Primarna slika koja se prikazuje uz proizvod.</span>
+                    <label class="file-label" for="productImage">ODABERITE GLAVNU SLIKU</label>
+                    <input id="productImage" class="file-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="selectImage($event)">
+
+                    @if (selectedImage) {
+                        <div class="selected-file">
+                            <span class="file-icon">✓</span>
+                            <span>{{ selectedImage.name }}</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="image-upload-box">
+                    <span class="upload-box-title">Dodatne slike</span>
+                    <span class="upload-box-description">Možete dodati najviše 3 dodatne slike.</span>
+                    <label class="file-label" for="additionalProductImages">ODABERITE DODATNE SLIKE</label>
+                    <input id="additionalProductImages" class="file-input" type="file" multiple accept="image/png,image/jpeg,image/gif,image/webp" (change)="selectAdditionalImages($event)">
+
+                    @if (selectedAdditionalImages.length > 0) {
+                        <div class="selected-images">
+                            @for (image of selectedAdditionalImages; track $index; let i = $index) {
+                                <div class="selected-image-item">
+                                    <span class="selected-image-name">{{ image.name }}</span>
+                                    <button type="button" class="remove-image-btn" (click)="removeAdditionalImage(i)">×</button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            </div>
+
+            @if (productError) {
+                <p class="message error-message">{{ productError }}</p>
+            }
+            @if (productMessage) {
+                <p class="message success-message">{{ productMessage }}</p>
+            }
+
+            <div class="form-actions">
+                <button type="button" class="primary-btn" (click)="createProduct()">DODAJ PROIZVOD</button>
+            </div>
+        </div>
+        }
+    </section>
+
+    <section class="accordion-card">
+        <button type="button" class="accordion-header" (click)="importSectionOpen = !importSectionOpen">
+        <div class="accordion-heading">
+            <span class="accordion-title">Dodavanje iz JSON fajla</span>
+            <span class="accordion-description">Učitajte lager listu i automatski dodajte definisane proizvode i usluge štampe.</span>
+        </div>
+        <span class="arrow" [class.open]="importSectionOpen">▼</span>
+        </button>
+
+        @if (importSectionOpen) {
+        <div class="accordion-content">
+            <div class="subsection first-subsection">
+            <div class="subsection-heading">
+                <div>
+                <span class="step-label">KORAK 1</span>
+                <h3>Učitajte lager listu</h3>
+                </div>
+            </div>
+
+            <p class="subsection-description">JSON fajl treba da sadrži proizvode, njihove kategorije, potkategorije, količine, boje i dostupne usluge štampe.</p>
+
+            <div class="json-upload-box">
+                <div class="json-upload-icon">JSON</div>
+                <div class="json-upload-content">
+                <strong>JSON lager lista</strong>
+                <span>Izaberite fajl sa računara.</span>
+                </div>
+                <label class="file-label" for="jsonFile">ODABERITE JSON FAJL</label>
+                <input
+                id="jsonFile"
+                class="file-input"
+                type="file"
+                accept=".json,application/json"
+                (change)="selectJsonFile($event)"
+                >
+            </div>
+
+            @if (selectedJsonFile) {
+                <div class="selected-json-file">
+                <div>
+                    <span class="selected-json-label">IZABRAN FAJL</span>
+                    <strong>{{ selectedJsonFile.name }}</strong>
+                </div>
+                </div>
+            }
+
+            <div class="json-actions">
+                <button type="button" class="primary-btn" [disabled]="!selectedJsonFile" (click)="importJson()">UVEZI PROIZVODE</button>
+            </div>
+
+            @if (importError) {
+                <p class="message error-message">{{ importError }}</p>
+            }
+            @if (importMessage) {
+                <p class="message success-message">{{ importMessage }}</p>
+            }
+
+            @if (importErrors.length > 0) {
+                <div class="import-errors">
+                    <h4>Proizvodi koji nisu uvezeni</h4>
+                    @for (error of importErrors; track $index) {
+                        <div class="import-error-item">
+                            <strong>{{ error.code }}</strong>
+                            <span>{{ error.message }}</span>
+                        </div>
+                    }
+                </div>
+            }
+            </div>
+
+            @if (importedProducts.length > 0) {
+            <div class="subsection">
+                <div class="subsection-heading">
+                    <div>
+                        <span class="step-label">KORAK 2</span>
+                        <h3>Dodajte slike uvezenim proizvodima</h3>
+                    </div>
+                </div>
+
+                <p class="subsection-description">Proizvodi su kreirani. Sada možete dodati glavnu i dodatne slike za svaki uvezeni proizvod.</p>
+
+                <div class="imported-products-list">
+                @for (importedProduct of importedProducts; track importedProduct._id) {
+                    <div class="imported-product-card">
+                        <div class="imported-product-info">
+                            <span class="product-code-badge">{{ importedProduct.code }}</span>
+                            <strong>{{ importedProduct.name }}</strong>
+                        </div>
+
+                        <div class="import-image-fields">
+                            <div class="import-image-field">
+                                <label>Glavna slika</label>
+                                <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="selectImportedMainImage(importedProduct._id, $event)">
+                            </div>
+
+                            <div class="import-image-field">
+                                <label>Dodatne slike</label>
+                                <input type="file" multiple accept="image/png,image/jpeg,image/gif,image/webp" (change)="selectImportedAdditionalImages(importedProduct._id, $event)">
+                            </div>
+
+                            <button type="button" class="secondary-btn upload-images-btn" (click)="uploadImportedProductImages(importedProduct._id)">
+                                SAČUVAJ SLIKE
+                            </button>
+                        </div>
+                    </div>
+                }
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </section>
+
+    @if (statusError) {
+        <p class="message error-message status-message">{{ statusError }}</p>
+    }
+    @if (statusMessage) {
+        <p class="message success-message status-message">{{ statusMessage }}</p>
+    }
+
+    <section class="products-card product-status-section">
+        <div class="status-section-header">
+        <div>
+            <span class="section-label">AKTIVNI PROIZVODI</span>
+            <h2>Aktivni proizvodi</h2>
+            <p>Proizvodi koji su trenutno dostupni kupcima.</p>
+        </div>
+        <div class="status-count active-count">{{ activeProducts.length }}</div>
+        </div>
+
+        @if (activeProducts.length > 0) {
+        <div class="table-wrapper">
+            <table class="products-table">
+            <thead>
+                <tr>
+                <th>Šifra</th>
+                <th>Proizvod</th>
+                <th>Kategorija</th>
+                <th>Potkategorija</th>
+                <th>Cena</th>
+                <th>Količina</th>
+                <th>Usluge</th>
+                <th>Dopuna zaliha</th>
+                <th>Status</th>
+                <th>Akcija</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (product of activeProducts; track product._id) {
+                <tr>
+                    <td class="product-code">{{ product.code }}</td>
+                    <td><strong class="product-name">{{ product.name }}</strong></td>
+                    <td>{{ getCategoryName(product.categoryId) }}</td>
+                    <td>{{ getSubcategoryName(product.categoryId, product.subcategoryId) }}</td>
+                    <td class="price">{{ product.unitPrice }} RSD</td>
+                    <td>
+                    <span class="stock-value" [class.low-stock]="product.quantity <= 10">
+                        {{ product.quantity }}
+                    </span>
+                    </td>
+                    <td>
+                    @if (product.printServices.length > 0) {
+                        <div class="services-list">
+                        @for (service of product.printServices; track service.type) {
+                            <span class="service-name">{{ service.type }}</span>
+                        }
+                        </div>
+                    } @else {
+                        <span class="muted">Bez dodatnih usluga</span>
+                    }
+                    </td>
+                    <td class="dopuna-zaliha">
+                    <div class="quantity-update">
+                        <input type="number" min="1" step="1" [name]="'newAmount_' + product._id" [(ngModel)]="newAmounts[product._id]" placeholder="Količina">
+                        <button type="button" class="secondary-btn quantity-btn" (click)="addQuantity(product)">
+                            AŽURIRAJ KOLIČINU
+                        </button>
+                    </div>
+                    </td>
+                    <td><span class="status-badge active">AKTIVAN</span></td>
+                    <td>
+                    <button type="button" class="deactivate-product-btn" (click)="deactivateProduct(product)">
+                        DEAKTIVIRAJ
+                    </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        } @else {
+        <div class="empty-products-state">Nema aktivnih proizvoda.</div>
+        }
+    </section>
+
+    <section class="products-card product-status-section">
+        <div class="status-section-header">
+            <div>
+                <span class="section-label">NEAKTIVNI PROIZVODI</span>
+                <h2>Neaktivni proizvodi</h2>
+                <p>Proizvodi koji trenutno nisu dostupni kupcima.</p>
+            </div>
+        <div class="status-count inactive-count">{{ inactiveProducts.length }}</div>
+        </div>
+
+        @if (inactiveProducts.length > 0) {
+        <div class="table-wrapper">
+            <table class="products-table">
+                <thead>
+                    <tr>
+                    <th>Šifra</th>
+                    <th>Proizvod</th>
+                    <th>Kategorija</th>
+                    <th>Potkategorija</th>
+                    <th>Cena</th>
+                    <th>Količina</th>
+                    <th>Usluge</th>
+                    <th>Status</th>
+                    <th>Akcija</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (product of inactiveProducts; track product._id) {
+                    <tr class="inactive-product-row">
+                        <td class="product-code">{{ product.code }}</td>
+                        <td><strong class="product-name">{{ product.name }}</strong></td>
+                        <td>{{ getCategoryName(product.categoryId) }}</td>
+                        <td>{{ getSubcategoryName(product.categoryId, product.subcategoryId) }}</td>
+                        <td class="price">{{ product.unitPrice }} RSD</td>
+                        <td>
+                        <span class="stock-value" [class.low-stock]="product.quantity <= 10">
+                            {{ product.quantity }}
+                        </span>
+                        </td>
+                        <td>
+                        @if (product.printServices.length > 0) {
+                            <div class="services-list">
+                                @for (service of product.printServices; track service.type) {
+                                    <span class="service-name">{{ service.type }}</span>
+                                }
+                                </div>
+                        } @else {
+                            <span class="muted">Bez dodatnih usluga</span>
+                        }
+                        </td>
+                        <td><span class="status-badge inactive">NEAKTIVAN</span></td>
+                        <td>
+                        <button type="button" class="activate-product-btn" (click)="activateProduct(product)">
+                            AKTIVIRAJ
+                        </button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        } @else {
+        <div class="empty-products-state">Nema neaktivnih proizvoda.</div>
+        }
+    </section>
+</main>
+
+<app-footer-component></app-footer-component>

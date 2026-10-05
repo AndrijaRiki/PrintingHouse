@@ -1,0 +1,75 @@
+<app-header-component></app-header-component>
+
+<div class="procurement-page">
+    <div class="page-header">
+        <div>
+            <h2>Javne nabavke</h2>
+            <p>Pregled otvorenih i završenih javnih nabavki.</p>
+        </div>
+    </div>
+
+    @for(procurement of procurements; track procurement._id) {
+        <div class="procurement-card">
+            <div class="procurement-header">
+                <div>
+                    <h3>Javna nabavka</h3>
+                    <span class="date">
+                        Kreirana {{ procurement.createdAt | date:'dd.MM.yyyy. HH:mm' }}
+                    </span>
+                </div>
+
+                <div class="status-area">
+                    <span class="status" [class.open]="procurement.status === 'open'"
+                        [class.finished]="procurement.status === 'awarded'"
+                        [class.no-offers]="procurement.status === 'no_offers'">
+                        {{ getStatus(procurement.status) }}
+                    </span>
+
+                    @if(procurement.status === 'open') {
+                        <span class="timer">
+                            {{ getRemainingTime(procurement.expiresAt) }}
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Proizvod</th>
+                        <th>Boja</th>
+                        <th>Štampa</th>
+                        <th>Količina</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for(item of procurement.items; track item._id) {
+                        <tr>
+                            <td>{{ item.productName }}</td>
+                            <td>{{ item.color || '-' }}</td>
+                            <td>{{ item.printService || 'Bez dodatne štampe' }}</td>
+                            <td>{{ item.quantity }}</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if(procurement.status === 'awarded') {
+                <div class="result success">
+                    Javna nabavka je završena i izabrana je najpovoljnija ponuda.
+                </div>
+            }
+
+            @if(procurement.status === 'no_offers') {
+                <div class="result failed">
+                    Javna nabavka je završena bez odgovarajućih ponuda.
+                </div>
+            }
+        </div>
+    } @empty {
+        <div class="empty">
+            Nemate javnih nabavki.
+        </div>
+    }
+</div>

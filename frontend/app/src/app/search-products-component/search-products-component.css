@@ -1,0 +1,382 @@
+:host{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#f5f5f5;
+}
+
+.search-page{
+    flex:1;
+    width:88%;
+    max-width:1400px;
+    margin:0 auto;
+    padding:40px 0 60px;
+    box-sizing:border-box;
+}
+
+#search{
+    padding:32px;
+    background:white;
+    border-radius:14px;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+#search h2{
+    margin:0 0 25px;
+    color:#222;
+    font-size:26px;
+    font-weight:700;
+}
+
+#search form{
+    display:flex;
+    align-items:flex-end;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+    padding:22px;
+    background:#fafafa;
+    border:1px solid #e7e7e7;
+    border-radius:9px;
+}
+
+#search form>div{
+    flex:1;
+    min-width:230px;
+}
+
+#search label{
+    display:block;
+    margin-bottom:7px;
+    color:#555;
+    font-size:13px;
+    font-weight:600;
+}
+
+#search input,
+#search select{
+    width:100%;
+    height:42px;
+    padding:0 12px;
+    box-sizing:border-box;
+    color:#333;
+    background:white;
+    border:1px solid #d8d8d8;
+    border-radius:7px;
+    outline:none;
+    font-family:inherit;
+    font-size:14px;
+    transition:.2s ease;
+}
+
+#search input:focus,
+#search select:focus{
+    border-color:#e48116;
+    box-shadow:0 0 0 3px rgba(228,129,22,.1);
+}
+
+#search form button{
+    height:42px;
+    padding:0 25px;
+    color:white;
+    background:#e48116;
+    border:1px solid #e48116;
+    border-radius:7px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+    transition:.2s ease;
+}
+
+#search form button:hover{
+    background:#ca6f0f;
+    border-color:#ca6f0f;
+    transform:translateY(-1px);
+}
+
+#search form button:active{
+    transform:translateY(0);
+}
+
+#search h3{
+    margin:28px 0 15px;
+    color:#222;
+    font-size:20px;
+    font-weight:600;
+}
+
+/* Pošto u HTML-u trenutno nema .table-wrapper,
+   sam #search omogućava horizontalni scroll po potrebi. */
+table{
+    width:100%;
+    min-width:620px;
+    border-collapse:collapse;
+    background:white;
+}
+
+thead{
+    background:#f7f7f7;
+}
+
+th{
+    padding:15px 13px;
+    text-align:left;
+    white-space:nowrap;
+    color:#555;
+    font-size:13px;
+    font-weight:600;
+    border-bottom:2px solid #e2e2e2;
+}
+
+td{
+    padding:16px 13px;
+    color:#444;
+    font-size:14px;
+    border-bottom:1px solid #ececec;
+}
+
+tbody tr{
+    transition:.15s ease;
+}
+
+tbody tr:hover{
+    background:#fafafa;
+}
+
+.sortable{
+    cursor:pointer;
+    user-select:none;
+}
+
+.sortable:hover{
+    color:#e48116;
+}
+
+td button{
+    padding:8px 14px;
+    color:#d4740f;
+    background:white;
+    border:1px solid #e48116;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+    transition:.2s ease;
+}
+
+td button:hover{
+    color:white;
+    background:#e48116;
+}
+
+#search>p{
+    margin:20px 0 0;
+    padding:16px;
+    text-align:center;
+    color:#777;
+    background:#fafafa;
+    border-radius:7px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+app-footer-component{
+    margin-top:auto;
+}
+
+@media(max-width:1024px){
+    .search-page{
+        width:94%;
+        padding:32px 0 52px;
+    }
+
+    #search{
+        padding:27px;
+    }
+
+    #search h2{
+        font-size:24px;
+    }
+
+    #search form{
+        gap:14px;
+        padding:19px;
+    }
+
+    #search form>div{
+        min-width:200px;
+    }
+
+    #search input,
+    #search select{
+        font-size:13px;
+    }
+
+    #search form button{
+        font-size:12px;
+    }
+
+    th{
+        padding:13px 11px;
+        font-size:12px;
+    }
+
+    td{
+        padding:14px 11px;
+        font-size:13px;
+    }
+}
+
+@media(max-width:768px){
+    .search-page{
+        width:calc(100% - 32px);
+        padding:26px 0 45px;
+    }
+
+    #search{
+        padding:22px 18px;
+        border-radius:11px;
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+    }
+
+    #search h2{
+        margin-bottom:20px;
+        font-size:21px;
+    }
+
+    #search form{
+        flex-direction:column;
+        align-items:stretch;
+        gap:13px;
+        margin-bottom:24px;
+        padding:16px;
+    }
+
+    #search form>div{
+        width:100%;
+        min-width:0;
+    }
+
+    #search label{
+        font-size:11px;
+    }
+
+    #search input,
+    #search select{
+        height:40px;
+        font-size:12px;
+    }
+
+    #search form button{
+        width:100%;
+        height:40px;
+        font-size:11px;
+    }
+
+    #search h3{
+        margin:22px 0 12px;
+        font-size:17px;
+    }
+
+    table{
+        min-width:580px;
+    }
+
+    th{
+        padding:11px 9px;
+        font-size:10px;
+    }
+
+    td{
+        padding:12px 9px;
+        font-size:12px;
+    }
+
+    td button{
+        padding:7px 10px;
+        font-size:10px;
+    }
+
+    #search>p{
+        padding:14px;
+        font-size:12px;
+    }
+}
+
+@media(max-width:480px){
+    .search-page{
+        width:calc(100% - 24px);
+        padding:20px 0 38px;
+    }
+
+    #search{
+        padding:17px 14px;
+        border-radius:9px;
+    }
+
+    #search h2{
+        margin-bottom:16px;
+        font-size:18px;
+    }
+
+    #search form{
+        gap:11px;
+        margin-bottom:18px;
+        padding:13px;
+        border-radius:7px;
+    }
+
+    #search label{
+        margin-bottom:5px;
+        font-size:10px;
+    }
+
+    #search input,
+    #search select{
+        height:38px;
+        padding:0 9px;
+        font-size:11px;
+        border-radius:6px;
+    }
+
+    #search form button{
+        height:38px;
+        padding:0 14px;
+        font-size:10px;
+        border-radius:6px;
+    }
+
+    #search h3{
+        margin:18px 0 10px;
+        font-size:15px;
+    }
+
+    table{
+        min-width:520px;
+    }
+
+    th{
+        padding:9px 7px;
+        font-size:8px;
+    }
+
+    td{
+        padding:10px 7px;
+        font-size:10px;
+    }
+
+    td button{
+        padding:6px 8px;
+        font-size:9px;
+    }
+
+    #search>p{
+        margin-top:15px;
+        padding:12px 9px;
+        font-size:10px;
+    }
+}

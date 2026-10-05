@@ -1,0 +1,231 @@
+<app-header-component></app-header-component>
+
+@if(product) {
+    <div class="product-page">
+        <h1>{{ product.name }}</h1>
+
+        <div class="product-info">
+            <p>
+                <b>Štamparija:</b>
+                {{ product.printerId.institution?.name || product.printerId.username || 'Nije dostupno' }}
+            </p>
+
+            <p>
+                <b>Grad:</b>
+                {{ product.printerId.institution?.city || 'Nije dostupno' }}
+            </p>
+
+            <p>
+                <b>Sviđanja:</b>
+                {{ product.likeCount }}
+                <button
+                    [disabled]="liked"
+                    [class.active]="liked"
+                    class="like-btn"
+                    (click)="likeProduct()">
+                    👍
+                </button>
+            </p>
+
+            <p>
+                <b>Nesviđanja:</b>
+                {{ product.dislikeCount }}
+                <button
+                    [disabled]="disliked"
+                    [class.active]="disliked"
+                    class="dislike-btn"
+                    (click)="dislikeProduct()">
+                    👎
+                </button>
+            </p>
+        </div>
+
+        <div class="gallery">
+            <div class="main-image">
+                <img [src]="mainImageUrl" [alt]="product.name">
+            </div>
+
+            <div class="thumbnails">
+                @for(image of imageUrls; track image; let i = $index) {
+                    <img
+                        [src]="image"
+                        [alt]="product.name"
+                        [class.selected]="i === selectedImageIndex"
+                        (click)="selectImage(i)">
+                }
+            </div>
+        </div>
+
+        @if(loggedIn && user?.role === 'client') {
+            <section class="extended-details">
+                <h2>Detalji proizvoda</h2>
+
+                <div class="detail-section">
+                    <h3>Opis proizvoda</h3>
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <div class="detail-section">
+                    <b>Cena po komadu:</b>
+                    {{ product.unitPrice }} RSD
+                </div>
+
+                <div class="detail-section">
+                    <label for="color"><b>Boja:</b></label>
+
+                    @if(product.colors && product.colors.length > 0) {
+                        <select
+                            id="color"
+                            name="color"
+                            [(ngModel)]="selectedColor">
+
+                            @for(color of product.colors; track color) {
+                                <option [value]="color">
+                                    {{ color }}
+                                </option>
+                            }
+                        </select>
+                    } @else {
+                        <select
+                            id="color"
+                            name="color"
+                            [(ngModel)]="selectedColor">
+
+                            <option value="Bela">
+                                Bela
+                            </option>
+                        </select>
+                    }
+                </div>
+
+                <div class="detail-section">
+                    <h3>Vrste štampe</h3>
+
+                    @if(product.printServices.length > 0) {
+                        <table class="services-table">
+                            <thead>
+                                <tr>
+                                    <th>Tip štampe</th>
+                                    <th>Max širina</th>
+                                    <th>Max visina</th>
+                                    <th>Dodatna cena</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @for(service of product.printServices; track service.type) {
+                                    <tr>
+                                        <td>{{ service.type }}</td>
+                                        <td>{{ service.maxWidthMm }} mm</td>
+                                        <td>{{ service.maxHeightMm }} mm</td>
+                                        <td>{{ service.additionalPrice }} RSD / kom</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="print-selection">
+                            <label for="printService">
+                                <b>Izaberite tip štampe:</b>
+                            </label>
+
+                            <select
+                                id="printService"
+                                name="printService"
+                                [(ngModel)]="selectedPrintServiceType">
+
+                                <option value="">
+                                    Bez dodatne štampe
+                                </option>
+
+                                @for(service of product.printServices; track service.type) {
+                                    <option [value]="service.type">
+                                        {{ service.type }}
+                                        (+{{ service.additionalPrice }} RSD)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        @if(getSelectedPrintService(); as service) {
+                            <div class="selected-service">
+                                <p>
+                                    Maksimalne dimenzije:
+                                    <b>
+                                        {{ service.maxWidthMm }} ×
+                                        {{ service.maxHeightMm }} mm
+                                    </b>
+                                </p>
+
+                                <p>
+                                    Dodatna cena:
+                                    <b>
+                                        {{ service.additionalPrice }} RSD po komadu
+                                    </b>
+                                </p>
+                            </div>
+                        }
+                    } @else {
+                        <p>Nema dostupnih dodatnih usluga štampe.</p>
+                    }
+                </div>
+
+                <div class="detail-section">
+                    <h3>Lokacija štamparije</h3>
+
+                    @if(product.printerId.institution) {
+                        <p>
+                            {{ product.printerId.institution.address }},
+                            {{ product.printerId.institution.city }}
+                        </p>
+
+                        @if(mapUrl) {
+                            <iframe
+                                [src]="mapUrl"
+                                width="100%"
+                                height="300"
+                                style="border:0;"
+                                loading="lazy">
+                            </iframe>
+                        }
+                    } @else {
+                        <p>Lokacija nije dostupna.</p>
+                    }
+                </div>
+
+                <div class="detail-section comments-section">
+                    <h3>Poslednji komentari</h3>
+
+                    @for(comment of comments; track comment._id) {
+                        <div
+                            class="product-comment"
+                            [class.my-comment]="comment.userId === user?._id">
+
+                            <div class="comment-header">
+                                <strong>{{ comment.username }}</strong>
+                                <span>
+                                    {{ comment.createdAt | date:'dd.MM.yyyy. HH:mm' }}
+                                </span>
+                            </div>
+
+                            <p>{{ comment.text }}</p>
+                        </div>
+                    } @empty {
+                        <p class="no-comments">
+                            Još uvek nema komentara za ovaj proizvod.
+                        </p>
+                    }
+                </div>
+
+                <button
+                    type="button"
+                    class="next-button"
+                    (click)="next()">
+                    DALJE
+                </button>
+            </section>
+        }
+    </div>
+} @else {
+    <p>Učitavanje proizvoda...</p>
+}

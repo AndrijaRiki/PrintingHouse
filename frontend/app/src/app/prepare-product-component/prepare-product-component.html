@@ -1,0 +1,84 @@
+<app-header-component></app-header-component>
+
+@if(product) {
+    <div class="prepare-page">
+        <h1>Priprema proizvoda</h1>
+        <h2>{{ product.name }}</h2>
+
+        <div class="editor">
+            <div class="preview">
+                <canvas
+                    #productCanvas
+                    width="600"
+                    height="600"
+                    (pointerdown)="pointerDown($event)"
+                    (pointermove)="pointerMove($event)"
+                    (pointerup)="pointerUp()"
+                    (pointerleave)="pointerUp()">
+                </canvas>
+            </div>
+
+            <div class="controls">
+                <div>
+                    <label for="customText">Tekst:</label>
+                    <textarea
+                        id="customText"
+                        name="customText"
+                        rows="4"
+                        [(ngModel)]="customText"
+                        (input)="redraw()">
+                    </textarea>
+                </div>
+
+                <div>
+                    <label for="customImage">Slika:</label>
+                    <input
+                        id="customImage"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.gif"
+                        (change)="selectCustomImage($event)">
+                </div>
+
+                <div>
+                    <label for="quantity">Količina:</label>
+                    <input
+                        id="quantity"
+                        name="quantity"
+                        type="number"
+                        min="1"
+                        [max]="product.quantity"
+                        [(ngModel)]="quantity">
+
+                    <span>
+                        Dostupno: {{ product.quantity }}
+                    </span>
+                </div>
+
+                <p>
+                    <b>Boja:</b> {{ selectedColor }}
+                </p>
+
+                <p>
+                    <b>Štampa:</b>
+                    {{ selectedPrintServiceType || 'Bez dodatne štampe' }}
+                </p>
+
+                @if(message) {
+                    <p>{{ message }}</p>
+                }
+
+                <button type="button" (click)="addToCart()">
+                    DODAJ U KORPU
+                </button>
+
+                <button type="button" (click)="resetDesign()">
+                    PONIŠTI
+                </button>
+
+                <button type="button" (click)="back()">
+                    NAZAD
+                </button>
+            </div>
+        </div>
+    </div>
+}

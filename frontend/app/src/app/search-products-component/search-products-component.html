@@ -1,0 +1,81 @@
+<app-header-component></app-header-component>
+
+<div class="search-page">
+    <section id="search">
+        <h2>Pretraga proizvoda</h2>
+
+        <form (ngSubmit)="searchProducts()">
+            <div>
+                <label for="productName">Naziv proizvoda:</label>
+                <input
+                    type="text"
+                    id="productName"
+                    name="productName"
+                    [(ngModel)]="productName"
+                    placeholder="Hemijska olovka">
+            </div>
+
+            <div>
+                <label for="category">Kategorija:</label>
+                <select
+                    id="category"
+                    name="category"
+                    [(ngModel)]="selectedCategoryId">
+
+                    <option value="">Sve kategorije</option>
+
+                    @for(category of categories; track category._id) {
+                        <option [value]="category._id">
+                            {{ category.name }}
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit">
+                PRETRAŽI
+            </button>
+        </form>
+
+        @if(products.length > 0) {
+            <h3>Rezultati pretrage</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th
+                            class="sortable"
+                            (click)="sortByName()">
+                            Naziv proizvoda
+                        </th>
+                        <th>Cena</th>
+                        <th>Kategorija</th>
+                        <th>Akcija</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for(product of products; track product._id) {
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.unitPrice }} RSD</td>
+                            <td>{{ getCategoryName(product.categoryId) }}</td>
+                            <td>
+                                <button
+                                    type="button"
+                                    (click)="showDetails(product._id)">
+                                    DETALJI
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        } @else {
+            @if(searchPerformed) {
+                <p>Nema proizvoda koji odgovaraju pretrazi.</p>
+            }
+        }
+    </section>
+</div>
+<app-footer-component></app-footer-component>

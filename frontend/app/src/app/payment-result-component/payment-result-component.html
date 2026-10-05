@@ -1,0 +1,29 @@
+<app-header-component></app-header-component>
+<main class="result-page">
+    <section class="result-card" [class.success]="success" [class.error]="finished && !success">
+        @if(!finished) {
+            <div class="result-icon">...</div>
+        } @else if(success) {
+            <div class="result-icon">✓</div>
+        } @else {
+            <div class="result-icon">!</div>
+        }
+
+        <h1>
+            @if(!finished) {
+                Provera plaćanja
+            } @else if(success) {
+                Plaćanje uspešno
+            } @else {
+                Plaćanje nije završeno
+            }
+        </h1>
+
+        <p>{{ message }}</p>
+
+        @if(finished) {
+            <button (click)="backToProfile()">NAZAD NA PROFIL</button>
+        }
+    </section>
+</main>
+<app-footer-component></app-footer-component>

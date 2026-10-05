@@ -1,0 +1,195 @@
+<app-header-component></app-header-component>
+@if(user && editedUser) {
+    <div class="profile-page">
+        <section class="profile-card">
+            <h2>Moj profil</h2>
+            <form (ngSubmit)="updateProfile()">
+                <div class="profile-image-section">
+                    <img [src]="profileImageUrl" alt="Profilna slika" class="profile-image">
+                    <input type="file" accept=".jpg,.jpeg,.png,.gif" (change)="onImageSelected($event)">
+                </div>
+                <div class="form-group">
+                    <label>Korisničko ime</label>
+                    <input type="text" name="username" [value]="user.username" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Ime</label>
+                    <input type="text" name="firstname" [(ngModel)]="editedUser.firstname">
+                </div>
+                <div class="form-group">
+                    <label>Prezime</label>
+                    <input type="text" name="lastname" [(ngModel)]="editedUser.lastname">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" [(ngModel)]="editedUser.email">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" name="phone" [(ngModel)]="editedUser.phone">
+                </div>
+                <button type="submit" class="update-button">AŽURIRAJ PODATKE</button>
+                @if(message) {
+                    <p class="message">{{ message }}</p>
+                }
+            </form>
+        </section>
+
+        @if(user.role === 'printer') {
+            <section class="orders-section">
+                <div class="orders-card">
+                    <div class="orders-header">
+                        <div>
+                            <span class="section-label">ŠTAMPARIJA</span>
+                            <h2>Narudžbine za izvršenje</h2>
+                            <p>Plaćene narudžbine koje je potrebno obraditi i isporučiti.</p>
+                        </div>
+                        <div class="orders-count">{{ printerOrders.length }}</div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID fakture</th>
+                                    <th>Klijent</th>
+                                    <th>Proizvodi</th>
+                                    <th>Ukupan iznos</th>
+                                    <th>Datum</th>
+                                    <th>Status</th>
+                                    <th>Akcija</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(order of printerOrders; track order._id) {
+                                    <tr>
+                                        <td class="invoice-number">{{ order.invoiceNumber }}</td>
+                                        <td>
+                                            <div class="customer-info">
+                                                <strong>{{ order.customerSnapshot.firstname }} {{ order.customerSnapshot.lastname }}</strong>
+                                                <span>{{ order.customerSnapshot.email }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="products-cell">
+                                            @for(item of order.items; track $index; let i = $index) {
+                                                <div class="ordered-product">
+                                                    <strong>{{ i + 1 }}. {{ item.productName }}</strong>
+                                                    <span>{{ item.quantity }} kom.</span>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="amount">{{ order.totalAmount }} RSD</td>
+                                        <td class="date">{{ order.createdAt | date:'dd.MM.yyyy.' }}</td>
+                                        <td>
+                                            <span class="status"
+                                                [class.paid]="order.status === 'paid'"
+                                                [class.printing]="order.status === 'printing'">
+                                                {{ getStatusName(order.status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if(order.status === 'paid') {
+                                                <button class="printing-btn" (click)="startPrinting(order._id)">POKRENI ŠTAMPU</button>
+                                            } @else if(order.status === 'printing') {
+                                                <button class="delivered-btn" (click)="markAsDelivered(order._id)">ISPORUČENO</button>
+                                            }
+                                        </td>
+                                    </tr>
+                                } @empty {
+                                    <tr>
+                                        <td colspan="7" class="empty">Trenutno nemate narudžbina za izvršenje.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        } @else if(user.clientType != null) {
+            <section class="orders-section">
+                <div class="orders-card">
+                    <div class="orders-header">
+                        <div>
+                            <span class="section-label">MOJE PORUDŽBINE</span>
+                            <h2>Narudžbine</h2>
+                            <p>Pregled svih vaših narudžbina i njihovih trenutnih statusa.</p>
+                        </div>
+                        <div class="orders-count">{{ allOrders.length }}</div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable" (click)="sortOrders('invoiceNumber')">ID fakture</th>
+                                    <th>Štamparija</th>
+                                    <th>Grad</th>
+                                    <th>Proizvodi</th>
+                                    <th class="sortable" (click)="sortOrders('totalAmount')">Ukupan iznos</th>
+                                    <th class="sortable" (click)="sortOrders('createdAt')">Datum</th>
+                                    <th class="sortable" (click)="sortOrders('status')">Status</th>
+                                    <th>Akcija</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(order of allOrders; track order._id) {
+                                    <tr>
+                                        <td class="invoice-number">{{ order.invoiceNumber }}</td>
+                                        <td>{{ order.printerId.institution?.name || order.printerId.username }}</td>
+                                        <td>{{ order.printerId.institution?.city || '-' }}</td>
+                                        <td class="products-cell">
+                                            @for(item of order.items; track $index; let i = $index) {
+                                                <div class="ordered-product">
+                                                    {{ i + 1 }}. {{ item.productName }}
+                                                    <span>({{ item.quantity }})</span>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="amount">{{ order.totalAmount }} RSD</td>
+                                        <td class="date">{{ order.createdAt | date:'dd.MM.yyyy.' }}</td>
+                                        <td>
+                                            <span class="status"
+                                                [class.ordered]="order.status === 'ordered'"
+                                                [class.paid]="order.status === 'paid'"
+                                                [class.printing]="order.status === 'printing'"
+                                                [class.delivered]="order.status === 'delivered'"
+                                                [class.received]="order.status === 'received'"
+                                                [class.cancelled]="order.status === 'cancelled'">
+                                                {{ getStatusName(order.status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="order-actions">
+                                                @if(order.status === 'ordered') {
+                                                    <button class="pay-order-btn" (click)="payOrder(order._id)">PLATI</button>
+                                                    <button class="cancel-order-btn" (click)="cancelOrder(order._id)">OTKAŽI</button>
+                                                }
+
+                                                @if(order.status === 'delivered') {
+                                                    <button class="received-btn" (click)="markAsReceived(order._id)">PRIMLJENO</button>
+                                                }
+
+                                                @if(order.status === 'paid' || order.status === 'printing' || order.status === 'delivered' || order.status === 'received') {
+                                                    <button class="invoice-btn" (click)="downloadInvoice(order._id, order.invoiceNumber)">FAKTURA</button>
+                                                }
+
+                                                @if(order.status === 'cancelled') {
+                                                    <span class="no-action">-</span>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                } @empty {
+                                    <tr>
+                                        <td colspan="8" class="empty">Nemate evidentiranih narudžbina.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        }
+    </div>
+}
+<app-footer-component></app-footer-component>
