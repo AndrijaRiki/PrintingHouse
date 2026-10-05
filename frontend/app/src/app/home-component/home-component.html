@@ -1,0 +1,98 @@
+<app-header-component></app-header-component>
+<main class="home-page">
+    <section class="home-header">
+        <div>
+            <span class="page-label">PRINTING HOUSE</span>
+            <h1>Dobro došli</h1>
+            @if(loggedUser) {
+                <p>Prijavljeni ste na svoj korisnički nalog.</p>
+            } @else {
+                <p>Pronađite proizvod i štampariju koja odgovara vašim potrebama.</p>
+            }
+        </div>
+        <div class="printer-count">
+            <span>Dostupne štamparije</span>
+            <strong>{{ printers.length }}</strong>
+        </div>
+    </section>
+
+    @if(topProducts.length > 0) {
+        <section class="top-products-section">
+            <div class="top-products-header">
+                <span class="section-label">IZDVAJAMO</span>
+                <h2>Najbolje ocenjeni proizvodi</h2>
+                <p>Pet proizvoda koje su naši korisnici najbolje ocenili.</p>
+            </div>
+            <div class="top-products">
+                @for(p of topProducts; track p._id; let i = $index) {
+                    <div class="top-product-card">
+                        <div class="product-rank">{{ i + 1 }}</div>
+                        <div class="product-icon">★</div>
+                        <div class="product-name">{{ p.name }}</div>
+                        <span class="product-description">Jedan od najbolje ocenjenih proizvoda</span>
+                    </div>
+                }
+            </div>
+        </section>
+    } @else {
+        <div class="no-data">Trenutno nema učitanih proizvoda.</div>
+    }
+
+    @if(!loggedUser) {
+        <section class="search-section">
+            <div class="search-header">
+                <span class="section-label">PRONAĐITE PROIZVOD</span>
+                <h2>Pretraga proizvoda</h2>
+                <p>Pretražite dostupnu ponudu prema nazivu ili kategoriji proizvoda.</p>
+            </div>
+            <form class="search-form" (ngSubmit)="searchProducts()">
+                <div class="form-group">
+                    <label for="productName">Naziv proizvoda</label>
+                    <input type="text" id="productName" name="productName" [(ngModel)]="productName" placeholder="Npr. Hemijska olovka">
+                </div>
+                <div class="form-group">
+                    <label for="category">Kategorija</label>
+                    <select id="category" name="category" [(ngModel)]="selectedCategoryId">
+                        <option value="">Sve kategorije</option>
+                        @for(category of categories; track category._id) {
+                            <option [value]="category._id">{{ category.name }}</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="search-btn">PRETRAŽI</button>
+            </form>
+
+            @if(products.length > 0) {
+                <div class="results-header">
+                    <h3>Rezultati pretrage</h3>
+                    <span>{{ products.length }} proizvoda</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sortable" (click)="sortByName()">Naziv proizvoda</th>
+                                <th>Cena</th>
+                                <th>Kategorija</th>
+                                <th>Akcija</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(product of products; track product._id) {
+                                <tr>
+                                    <td class="product-cell">{{ product.name }}</td>
+                                    <td><strong>{{ product.unitPrice }} RSD</strong></td>
+                                    <td>{{ getCategoryName(product.categoryId) }}</td>
+                                    <td><button type="button" class="details-btn" (click)="showDetails(product._id)">DETALJI</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            } @else if(searchPerformed) {
+                <div class="no-results">Nema proizvoda koji odgovaraju pretrazi.</div>
+            }
+        </section>
+    }
+</main>
+<app-footer-component></app-footer-component>

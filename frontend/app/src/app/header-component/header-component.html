@@ -1,0 +1,40 @@
+<header>
+    <a class="brand" routerLink="/">Printing House</a>
+    <nav>
+        @if(korisnik?.role !== 'admin') {
+            <a routerLink="/">Početna</a>
+        }
+        @if(loggedIn) {
+            
+        }
+        @if(!loggedIn) {
+            <a routerLink="/login">Prijava</a>
+            <a routerLink="/register">Registracija</a>
+        }
+        @if(loggedIn) {
+            <a [routerLink]="['/profile', korisnik?.username]">Profil</a>
+            @if(korisnik?.role !== 'printer' && korisnik?.role !== 'admin') {
+                <a routerLink="/searchProducts">Proizvodi</a>
+                <a routerLink="/ecart">E-Korpa</a>
+                <a routerLink="/archive">Arhiva proizvoda</a>
+            }
+        }
+        @if(korisnik?.role === 'client' && korisnik?.clientType === 'company') {
+            <a routerLink="/publicProcurements">Javne nabavke</a>
+        }
+        @if(korisnik?.role === 'printer') {
+            <a routerLink="/openProcurements">Javne nabavke</a>
+            <a routerLink="/products-services">Proizvodi i usluge</a>
+        }
+        @if(korisnik?.role === 'admin') {
+            <a routerLink="/adminPanel">Kontrolna tabla</a>
+        }
+        @if(loggedIn) {
+            <a class="logout-link" routerLink="/" (click)="logout()">Odjavite se</a>
+        }
+        @if(!loggedIn) {
+            <a routerLink="/adminLogin">Administrator ste?</a>
+        }
+    </nav>
+    <ng-content></ng-content>
+</header>

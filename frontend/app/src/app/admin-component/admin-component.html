@@ -1,0 +1,256 @@
+<app-header-component></app-header-component>
+
+<main class="admin-page">
+    <div class="page-header">
+        <span class="section-label">ADMINISTRACIJA</span>
+        <h1>Administratorski panel</h1>
+        <p>Upravljanje korisnicima, registracijama, kategorijama i statistikom sistema.</p>
+    </div>
+
+    @if (error) {
+        <div class="message error-message">{{ error }}</div>
+    }
+
+    @if (message) {
+        <div class="message success-message">{{ message }}</div>
+    }
+
+    <section class="admin-card">
+        <div class="section-header">
+        <div>
+            <span class="section-label">ZAHTEVI</span>
+            <h2>Neodobreni korisnici</h2>
+            <p>Registracije koje čekaju odluku administratora.</p>
+        </div>
+        <span class="count">{{ pendingUsers.length }}</span>
+        </div>
+
+        @if (pendingUsers.length > 0) {
+        <div class="table-wrapper">
+            <table>
+            <thead>
+                <tr>
+                <th>Korisničko ime</th>
+                <th>Ime i prezime</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Tip</th>
+                <th>Institucija</th>
+                <th>Akcija</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of pendingUsers; track user._id) {
+                <tr>
+                    <td class="username">{{ user.username }}</td>
+                    <td>{{ user.firstname }} {{ user.lastname }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.phone }}</td>
+                    <td>{{ getRoleName(user.role) }}</td>
+                    <td>{{ user.institution?.name ?? '-' }}</td>
+                    <td>
+                    <div class="actions">
+                        <button class="approve-btn" (click)="approveUser(user)">ODOBRI</button>
+                        <button class="reject-btn" (click)="rejectUser(user)">ODBIJ</button>
+                    </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        } @else {
+        <div class="empty">Nema neodobrenih korisnika.</div>
+        }
+    </section>
+
+    <section class="admin-card">
+        <div class="section-header">
+        <div>
+            <span class="section-label">KORISNICI</span>
+            <h2>Korisnički nalozi</h2>
+            <p>Pregled, ažuriranje i brisanje naloga.</p>
+        </div>
+        <span class="count">{{ users.length }}</span>
+        </div>
+
+        @if (users.length > 0) {
+        <div class="table-wrapper">
+            <table>
+            <thead>
+                <tr>
+                <th>Korisničko ime</th>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Uloga</th>
+                <th>Status</th>
+                <th>Akcija</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of users; track user._id) {
+                <tr>
+                    <td class="username">{{ user.username }}</td>
+
+                    @if (editUser?._id === user._id) {
+                    <td><input [(ngModel)]="editUser!.firstname"></td>
+                    <td><input [(ngModel)]="editUser!.lastname"></td>
+                    <td><input [(ngModel)]="editUser!.email"></td>
+                    <td><input [(ngModel)]="editUser!.phone"></td>
+                    <td>{{ getRoleName(user.role) }}</td>
+                    <td>
+                        <select [(ngModel)]="editUser!.status">
+                        <option value="active">Aktivan</option>
+                        <option value="pending">Na čekanju</option>
+                        <option value="rejected">Odbijen</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="actions">
+                        <button class="save-btn" (click)="saveUser()">SAČUVAJ</button>
+                        <button class="neutral-btn" (click)="cancelEdit()">OTKAŽI</button>
+                        </div>
+                    </td>
+                    } @else {
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.lastname }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.phone }}</td>
+                    <td>{{ getRoleName(user.role) }}</td>
+                    <td>
+                        <span
+                        class="status"
+                        [class.active]="user.status === 'active'"
+                        [class.pending]="user.status === 'pending'"
+                        [class.rejected]="user.status === 'rejected'"
+                        >
+                        {{ getStatusName(user.status) }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                        <button class="edit-btn" (click)="startEdit(user)">IZMENI</button>
+                        @if (user._id !== adminId) {
+                            <button class="delete-btn" (click)="deleteUser(user)">OBRIŠI</button>
+                        }
+                        </div>
+                    </td>
+                    }
+                </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        } @else {
+        <div class="empty">Nema korisnika.</div>
+        }
+    </section>
+
+    <section class="admin-card">
+        <div class="section-header">
+        <div>
+            <span class="section-label">KATEGORIJE</span>
+            <h2>Kategorije proizvoda</h2>
+            <p>Dodavanje novih kategorija i potkategorija.</p>
+        </div>
+        </div>
+
+        <div class="category-forms">
+        <div class="category-form">
+            <h3>Nova kategorija</h3>
+            <input
+            type="text"
+            [(ngModel)]="newCategoryName"
+            placeholder="Naziv kategorije"
+            >
+            <button class="primary-btn" (click)="createCategory()">DODAJ KATEGORIJU</button>
+        </div>
+
+        <div class="category-form">
+            <h3>Nova potkategorija</h3>
+            <select [(ngModel)]="selectedCategoryId">
+            <option value="">Izaberite kategoriju</option>
+            @for (category of categories; track category._id) {
+                <option [value]="category._id">{{ category.name }}</option>
+            }
+            </select>
+            <input
+            type="text"
+            [(ngModel)]="newSubcategoryName"
+            placeholder="Naziv potkategorije"
+            >
+            <button class="primary-btn" (click)="createSubcategory()">DODAJ POTKATEGORIJU</button>
+        </div>
+        </div>
+
+        <div class="category-list">
+        @for (category of categories; track category._id) {
+            <div class="category-item">
+            <strong>{{ category.name }}</strong>
+            <div class="subcategory-list">
+                @for (subcategory of category.subcategories; track subcategory._id) {
+                <span>{{ subcategory.name }}</span>
+                }
+            </div>
+            </div>
+        }
+        </div>
+    </section>
+
+    <section class="admin-card">
+        <div class="section-header">
+        <div>
+            <span class="section-label">STATISTIKA</span>
+            <h2>Promet štamparija</h2>
+            <p>Promet štamparija u poslednja tri meseca, poređan opadajuće.</p>
+        </div>
+        </div>
+        <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
+        </div>
+    </section>
+
+    <section class="admin-card">
+        <div class="section-header">
+        <div>
+            <span class="section-label">STATISTIKA</span>
+            <h2>Najčešće naručivani proizvodi</h2>
+            <p>Udeo proizvoda u ukupnoj naručenoj količini tokom poslednjih mesec dana.</p>
+        </div>
+        </div>
+        <div class="chart-container pie-chart">
+        <canvas id="productsChart"></canvas>
+        </div>
+    </section>
+
+    <section class="admin-card">
+        <div class="section-header">
+        <div>
+            <span class="section-label">STATISTIKA</span>
+            <h2>Kretanje ocene proizvoda</h2>
+            <p>Ocena predstavlja razliku između broja lajkova i dislajkova.</p>
+        </div>
+        </div>
+
+        <div class="product-filter">
+        @for (product of ratingData; track product.productId) {
+            <label class="filter-item">
+            <input
+                type="checkbox"
+                [checked]="selectedRatingProducts.includes(product.productId)"
+                (change)="toggleRatingProduct(product.productId, $event)"
+            >
+            <span>{{ product.productName }}</span>
+            </label>
+        }
+        </div>
+
+        <div class="chart-container">
+        <canvas id="ratingChart"></canvas>
+        </div>
+    </section>
+</main>
+
+<app-footer-component></app-footer-component>

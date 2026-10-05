@@ -1,0 +1,103 @@
+<app-header-component></app-header-component>
+
+<div class="procurement-page">
+    <div class="page-header">
+        <h2>Otvorene javne nabavke</h2>
+        <p>Pregled aktivnih licitacija i podnošenje ponuda.</p>
+    </div>
+
+    @for(procurement of procurements; track procurement._id) {
+        <div class="procurement-card">
+            <div class="procurement-header">
+                <div>
+                    <h3>Javna nabavka</h3>
+                    <span>{{ procurement.createdAt | date:'dd.MM.yyyy. HH:mm' }}</span>
+                </div>
+
+                <div class="remaining">
+                    Preostalo:
+                    <strong>{{ getRemainingTime(procurement.expiresAt) }}</strong>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Traženi proizvod</th>
+                        <th>Količina</th>
+                        <th>Boja</th>
+                        <th>Moj proizvod</th>
+                        <th>Cena / kom</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for(item of procurement.items; track item._id) {
+                        <tr>
+                            <td>
+                                <strong>{{ item.productName }}</strong>
+
+                                @if(item.printService) {
+                                    <div class="small-text">
+                                        Štampa: {{ item.printService }}
+                                    </div>
+                                }
+                            </td>
+
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.color || '-' }}</td>
+
+                            <td>
+                                <select [(ngModel)]="selectedProducts[item._id]">
+                                    <option value="">Izaberite proizvod</option>
+
+                                    @for(product of getProductsForItem(item); track product._id) {
+                                        <option [value]="product._id">
+                                            {{ product.name }} — stanje: {{ product.quantity }}
+                                        </option>
+                                    }
+                                </select>
+
+                                @if(getProductsForItem(item).length === 0) {
+                                    <div class="no-product">Nemate odgovarajući proizvod.</div>
+                                }
+                            </td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    [(ngModel)]="prices[item._id]"
+                                    placeholder="RSD">
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="bid-total">
+                Ukupna ponuda:
+                <strong>{{ getBidTotal(procurement) }} RSD</strong>
+            </div>
+
+            @if(messages[procurement._id]) {
+                <div
+                    class="message"
+                    [class.success]="messageColors[procurement._id] === 'green'"
+                    [class.error]="messageColors[procurement._id] === 'red'">
+                    {{ messages[procurement._id] }}
+                </div>
+            }
+
+            <div class="bid-footer">
+                <button type="button" class="bid-btn" (click)="submitBid(procurement)">
+                    SAČUVAJ PONUDU
+                </button>
+            </div>
+        </div>
+    } @empty {
+        <div class="empty">
+            Trenutno nema otvorenih javnih nabavki.
+        </div>
+    }
+</div>

@@ -1,0 +1,179 @@
+<app-header-component></app-header-component>
+
+<div class="archive-page">
+    <section class="archive-card">
+        <div class="archive-header">
+            <div>
+                <h2>Arhiva proizvoda</h2>
+                <p>Pregled isporučenih i primljenih proizvoda.</p>
+            </div>
+
+            <div class="archive-summary">
+                <div class="summary-item">
+                    <span>Ukupno</span>
+                    <strong>{{ archivedProducts.length }}</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Isporučeno</span>
+                    <strong>{{ getDeliveredCount() }}</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Primljeno</span>
+                    <strong>{{ getReceivedCount() }}</strong>
+                </div>
+            </div>
+        </div>
+
+        @if(message) {
+            <div class="message">{{ message }}</div>
+        }
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable" (click)="sortProducts('date')">
+                            Datum
+                            @if(sortField === 'date') {
+                                <span class="sort-arrow">{{ sortAscending ? '↑' : '↓' }}</span>
+                            }
+                        </th>
+
+                        <th class="sortable" (click)="sortProducts('name')">
+                            Proizvod
+                            @if(sortField === 'name') {
+                                <span class="sort-arrow">{{ sortAscending ? '↑' : '↓' }}</span>
+                            }
+                        </th>
+
+                        <th class="sortable" (click)="sortProducts('quantity')">
+                            Količina
+                            @if(sortField === 'quantity') {
+                                <span class="sort-arrow">{{ sortAscending ? '↑' : '↓' }}</span>
+                            }
+                        </th>
+
+                        <th class="sortable" (click)="sortProducts('printer')">
+                            Štamparija
+                            @if(sortField === 'printer') {
+                                <span class="sort-arrow">{{ sortAscending ? '↑' : '↓' }}</span>
+                            }
+                        </th>
+
+                        <th>Status</th>
+                        <th>Ocena</th>
+                        <th>Komentar</th>
+                        <th>Akcija</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for(item of archivedProducts; track item.archiveId) {
+                        <tr>
+                            <td class="date-cell">{{ item.orderDate | date:'dd.MM.yyyy.' }}</td>
+
+                            <td>
+                                <div class="product-info">
+                                    <strong>{{ item.productName }}</strong>
+
+                                    @if(item.color) {
+                                        <span>Boja: {{ item.color }}</span>
+                                    }
+
+                                    @if(item.printService) {
+                                        <span>{{ item.printService }}</span>
+                                    }
+                                </div>
+                            </td>
+
+                            <td class="quantity-cell">{{ item.quantity }}</td>
+
+                            <td>
+                                <div class="printer-info">
+                                    <strong>{{ item.printerName }}</strong>
+
+                                    @if(item.printerCity) {
+                                        <span>{{ item.printerCity }}</span>
+                                    }
+                                </div>
+                            </td>
+
+                            <td>
+                                @if(item.status === 'delivered') {
+                                    <span class="status delivered">Isporučeno</span>
+                                }
+
+                                @if(item.status === 'received') {
+                                    <span class="status received">Primljeno</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if(item.status === 'received') {
+                                    <div class="reaction-buttons">
+                                        <button
+                                            type="button"
+                                            class="reaction-btn like-btn"
+                                            [class.active]="item.userReaction === 'like'"
+                                            [disabled]="item.userReaction === 'like'"
+                                            (click)="rateProduct(item, 'like')">
+                                            👍
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="reaction-btn dislike-btn"
+                                            [class.active]="item.userReaction === 'dislike'"
+                                            [disabled]="item.userReaction === 'dislike'"
+                                            (click)="rateProduct(item, 'dislike')">
+                                            👎
+                                        </button>
+                                    </div>
+                                } @else {
+                                    <span class="unavailable">-</span>
+                                }
+                            </td>
+
+                            <td class="comment-cell">
+                                @if(item.status === 'received') {
+                                    <div class="comment-form">
+                                        <textarea
+                                            [(ngModel)]="comments[item.archiveId]"
+                                            placeholder="Ostavite komentar..."
+                                            maxlength="500">
+                                        </textarea>
+
+                                        <button type="button" class="comment-btn" (click)="addComment(item)">
+                                            Pošalji
+                                        </button>
+                                    </div>
+                                } @else {
+                                    <span class="unavailable">Dostupno nakon prijema</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if(item.status === 'delivered') {
+                                    <button
+                                        type="button"
+                                        class="receive-btn"
+                                        (click)="markAsReceived(item)">
+                                        Potvrdi prijem
+                                    </button>
+                                } @else {
+                                    <span class="received-check">✓ Primljeno</span>
+                                }
+                            </td>
+                        </tr>
+                    } @empty {
+                        <tr>
+                            <td colspan="8" class="empty">Nemate proizvode u arhivi.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

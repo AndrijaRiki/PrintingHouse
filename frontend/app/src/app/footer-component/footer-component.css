@@ -1,0 +1,131 @@
+.footer{
+    width:100%;
+    margin-top:auto;
+    background:#222;
+    color:white;
+}
+
+.footer-content{
+    width:88%;
+    max-width:1400px;
+    margin:0 auto;
+    padding:20px 0;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:35px;
+}
+
+.footer-section h3,
+.footer-section h4{
+    margin:0 0 6px;
+}
+
+.footer-section h3{
+    color:#e48116;
+    font-size:18px;
+}
+
+.footer-section h4{
+    color:#e48116;
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+}
+
+.footer-section p{
+    margin:3px 0;
+    color:#ccc;
+    font-size:12px;
+    line-height:1.4;
+}
+
+.footer-bottom{
+    padding:9px 12px;
+    text-align:center;
+    background:#1b1b1b;
+    border-top:1px solid #333;
+    color:#888;
+    font-size:10px;
+}
+
+@media(max-width:1024px){
+    .footer-content{
+        width:94%;
+        padding:18px 0;
+        gap:25px;
+    }
+
+    .footer-section h3{
+        font-size:17px;
+    }
+
+    .footer-section h4{
+        font-size:11px;
+    }
+
+    .footer-section p{
+        font-size:11px;
+    }
+}
+
+@media(max-width:768px){
+    .footer-content{
+        width:calc(100% - 32px);
+        padding:15px 0;
+        grid-template-columns:repeat(3,1fr);
+        gap:18px;
+    }
+
+    .footer-section h3{
+        font-size:15px;
+    }
+
+    .footer-section h4{
+        font-size:9px;
+    }
+
+    .footer-section p{
+        font-size:9px;
+        line-height:1.3;
+    }
+
+    .footer-bottom{
+        padding:7px 10px;
+        font-size:9px;
+    }
+}
+
+@media(max-width:480px){
+    .footer-content{
+        width:calc(100% - 24px);
+        padding:11px 0;
+        grid-template-columns:1fr;
+        gap:8px;
+    }
+
+    .footer-section h3,
+    .footer-section h4{
+        margin-bottom:2px;
+    }
+
+    .footer-section h3{
+        font-size:14px;
+    }
+
+    .footer-section h4{
+        font-size:9px;
+        letter-spacing:.5px;
+    }
+
+    .footer-section p{
+        margin:1px 0;
+        font-size:9px;
+        line-height:1.25;
+    }
+
+    .footer-bottom{
+        padding:6px 8px;
+        font-size:8px;
+    }
+}

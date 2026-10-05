@@ -1,0 +1,106 @@
+<div class="page-wrapper">
+    <app-header-component></app-header-component>
+    <div class="cart-page">
+        <h1>E-korpa</h1>
+        @if(cartGroups.length === 0) {
+            <div class="empty-cart">
+                <p>Vaša korpa je prazna.</p>
+            </div>
+        } @else {
+            @for(group of cartGroups; track group.printerId) {
+                <section class="printer-group">
+                    <div class="printer-header">
+                        <h2>{{ group.printerName }}</h2>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Proizvod</th>
+                                    <th>Količina</th>
+                                    <th>Tip štampe</th>
+                                    <th>Ukupna cena</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(item of group.items; track item._id) {
+                                    <tr>
+                                        <td>{{ item.productId.name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>
+                                            @if(item.selectedPrintService) {
+                                                {{ item.selectedPrintService.type }}
+                                            } @else {
+                                                Bez dodatne štampe
+                                            }
+                                        </td>
+                                        <td>{{ item.totalPrice }} RSD</td>
+                                        <td>
+                                            <button class="remove-btn" (click)="removeFromCart(item)">Ukloni</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="printer-total">
+                        Ukupno za ovu štampariju:
+                        <strong>{{ group.totalAmount }} RSD</strong>
+                    </div>
+                </section>
+            }
+            <section class="cart-summary">
+                <h2>Pregled narudžbine</h2>
+                <div>
+                    Broj štamparija:
+                    <strong>{{ cartGroups.length }}</strong>
+                </div>
+                <div>
+                    Ukupna vrednost:
+                    <strong>{{ totalAmount }} RSD</strong>
+                </div>
+                @if(cartGroups.length > 1) {
+                    <p>
+                        Proizvodi su iz više štamparija. Biće formirano
+                        {{ cartGroups.length }} odvojenih porudžbina.
+                    </p>
+                }
+            </section>
+
+            @if(user?.clientType === 'individual') {
+                <section class="procurement-info">
+                    <h2>Potvrda porudžbine</h2>
+                    <p>
+                        Potvrđivanjem će porudžbina dobiti status „Naručeno“.
+                        Plaćanje ćete izvršiti naknadno sa svog profila.
+                    </p>
+                    <p>
+                        Dok porudžbina nije plaćena, možete je otkazati.
+                    </p>
+                    <button class="confirm-btn" [disabled]="creatingOrder" (click)="createOrder()">
+                        {{ creatingOrder ? 'KREIRANJE...' : 'POTVRDI PORUDŽBINU' }}
+                    </button>
+                </section>
+            }
+
+            @if(user?.clientType === 'company') {
+                <section class="procurement-info">
+                    <h2>Javna nabavka</h2>
+                    <p>
+                        Potvrđivanjem korpe biće kreiran poziv za podnošenje ponuda štamparijama.
+                    </p>
+                    <p>Licitacija traje 10 minuta.</p>
+                    <button class="confirm-btn" (click)="createPublicProcurement()">
+                        POTVRDI JAVNU NABAVKU
+                    </button>
+                </section>
+            }
+
+            @if(message) {
+                <p class="message">{{ message }}</p>
+            }
+        }
+    </div>
+    <app-footer-component></app-footer-component>
+</div>
