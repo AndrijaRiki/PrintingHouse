@@ -1,0 +1,31 @@
+[{
+  "_id": {
+    "$oid": "6ab2f06f4fe6049e374c41a4"
+  },
+  "procurementId": {
+    "$oid": "6ab2efeb07e7fe89f7e5656a"
+  },
+  "printerId": {
+    "$oid": "6aa09004716c99eb722bf504"
+  },
+  "createdAt": {
+    "$date": "2026-09-22T21:17:35.876Z"
+  },
+  "items": [
+    {
+      "requestedItemId": {
+        "$oid": "6ab2efeb07e7fe89f7e5656b"
+      },
+      "productId": {
+        "$oid": "6aa2d16c6c3f450feb30ce77"
+      },
+      "unitPrice": 3000,
+      "quantity": 10,
+      "totalPrice": 30000
+    }
+  ],
+  "totalAmount": 30000,
+  "updatedAt": {
+    "$date": "2026-09-22T21:17:35.876Z"
+  }
+}]

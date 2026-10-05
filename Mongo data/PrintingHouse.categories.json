@@ -1,0 +1,85 @@
+[{
+  "_id": {
+    "$oid": "6ab000000000000000000001"
+  },
+  "name": "Štampa malih formata",
+  "subcategories": [
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000001"
+      },
+      "name": "Hemijske olovke"
+    },
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000002"
+      },
+      "name": "Vizit karte"
+    },
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000006"
+      },
+      "name": "Flajeri"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6ab000000000000000000002"
+  },
+  "name": "Štampa velikih formata",
+  "subcategories": [
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000005"
+      },
+      "name": "Rollup"
+    },
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000007"
+      },
+      "name": "Posteri"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6ab000000000000000000003"
+  },
+  "name": "Kreativne štampe",
+  "subcategories": [
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000003"
+      },
+      "name": "Majice"
+    },
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000004"
+      },
+      "name": "Šolje"
+    },
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000008"
+      },
+      "name": "Duksevi"
+    },
+    {
+      "_id": {
+        "$oid": "6ac000000000000000000009"
+      },
+      "name": "Cegeri"
+    },
+    {
+      "name": "Kape",
+      "_id": {
+        "$oid": "6ab3170780281f86b695df86"
+      }
+    }
+  ],
+  "__v": 1
+}]

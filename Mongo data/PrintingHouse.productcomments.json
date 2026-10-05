@@ -1,0 +1,76 @@
+[{
+  "_id": {
+    "$oid": "6ab05d9e2685baf0311d8dab"
+  },
+  "productId": {
+    "$oid": "6aa2d0e96c3f450feb30ce60"
+  },
+  "userId": {
+    "$oid": "6aa292b8f59e447095d3bdac"
+  },
+  "username": "marko",
+  "text": "Veoma lepa i kvalitetna solja!",
+  "createdAt": {
+    "$date": "2026-09-20T22:26:38.832Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-20T22:26:38.832Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ab05dcf2685baf0311d8dad"
+  },
+  "productId": {
+    "$oid": "6aa2d0e96c3f450feb30ce62"
+  },
+  "userId": {
+    "$oid": "6aa292b8f59e447095d3bdac"
+  },
+  "username": "marko",
+  "text": "Ne svidja mi se kvalitet papira, za ove pare moze to i bolje!",
+  "createdAt": {
+    "$date": "2026-09-20T22:27:27.170Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-20T22:27:27.170Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ab05e002685baf0311d8daf"
+  },
+  "productId": {
+    "$oid": "6aa2d0e96c3f450feb30ce5f"
+  },
+  "userId": {
+    "$oid": "6aa292b8f59e447095d3bdac"
+  },
+  "username": "marko",
+  "text": "JAKO KVALITETNA MAJICA, LAKO SE PERE U MASINI!",
+  "createdAt": {
+    "$date": "2026-09-20T22:28:16.565Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-20T22:28:16.565Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ab32b792536ddab8cabbb61"
+  },
+  "productId": {
+    "$oid": "6ab3227d209896aa3f7bae3b"
+  },
+  "userId": {
+    "$oid": "6aaece82db94e35c792ebb84"
+  },
+  "username": "andrijariki",
+  "text": "Veoma zadovoljan kvalitetom",
+  "createdAt": {
+    "$date": "2026-09-23T01:29:29.459Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-23T01:29:29.459Z"
+  }
+}]
